@@ -13,10 +13,13 @@ Then open http://localhost:3000.
 
 ## What's implemented
 
-- `/` — Home page: hero + 12-card workout library grid
+- `/` — Home page: hero + workout library with text search and muscle-group filter
 - `/workouts/[slug]` — Exercise details page (dynamic route, one page per workout)
 - `/plan` — My Plan page: Today's Plan / Saved tabs, duration sort, mark-as-done,
-  remove, and an empty state — all backed by local React state (no backend yet)
+  remove, and an empty state
+- Workout detail actions add exercises to today's plan or the Saved list
+- Plan selections and completion state persist in browser local storage
+- Local workout artwork is used on cards, detail pages, and the plan list
 
 ## Assumptions made (no answers were given for Phase 2 questions, so these were
 chosen to keep things moving — flag anything you want changed)
@@ -28,23 +31,19 @@ chosen to keep things moving — flag anything you want changed)
    to match the "Twelve lifts covering every major muscle group" copy —
    see the comment at the top of `lib/workouts.ts`. Swap these for real
    content or drop back to 10 cards, whichever you'd rather.
-3. **Images**: your uploaded `banner.png` is used in the hero. Your uploaded
-   `logo.png` was **not** used — Figma's own header/footer mark is a
-   "crossed dumbbells" icon, which I rebuilt as an inline SVG
-   (`components/icons.tsx`) to match the design. The 12 workout-card
-   thumbnails and the details-page hero image are placeholder gradient
-   blocks with the exercise name — I don't have network access in this
-   environment to pull the actual stock photos out of Figma, so these
-   need real photos dropped in (`components/WorkoutCard.tsx` and
-   `app/workouts/[slug]/page.tsx`).
+3. **Images**: `banner.png` is used in the home-page hero and `v4_11.png` is
+   reused as local artwork for workout cards, detail pages, and plan thumbnails.
+   `logo.png` is not used; the header/footer mark is an inline SVG in
+   `components/icons.tsx`.
 4. **Details page content**: the spec table (Difficulty/Sets/Reps) and the
    instructions list weren't fully populated for every exercise in the
    Figma file — I only had full detail for "Barbell Bench Press". I wrote
    plausible values for the other 11 in `lib/workouts.ts`; treat those as
    drafts to review, not final copy.
 5. **"Mark as Done"** toggles a visual done state (dims the row) rather
-   than removing the item — seemed closer to intent than deleting it.
-   **"Sort By: Duration"** toggles ascending/descending on click.
+   than removing the item. Plan contents and completion state persist in this
+   browser's local storage, but are not synced across devices. **"Sort By:
+   Duration"** toggles ascending/descending on click.
 6. **Responsive**: Figma only had desktop (1280px) frames, so the grid
    breakpoints (3 → 2 → 1 columns) and header, while functional down to
    mobile widths, are my own judgment call, not something from the file.
@@ -54,8 +53,8 @@ chosen to keep things moving — flag anything you want changed)
 
 ## Not implemented
 
-- No backend/persistence — plan state resets on refresh
-- No auth
-- No search/filter by muscle group despite the tagline
+- No backend or account-based sync
+- No authentication
+- Workout images are shared across exercises rather than exercise-specific
 - Hover/focus states beyond basic Tailwind defaults (none were specified
   in Figma)
