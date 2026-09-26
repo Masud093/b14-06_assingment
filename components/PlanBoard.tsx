@@ -15,6 +15,7 @@ interface PlanItem {
 
 export function PlanBoard({ initial }: { initial: Workout[] }) {
   const [tab, setTab] = useState<Tab>("today");
+  // Keep each tab's list independent so actions in one view do not affect the other.
   const [todayItems, setTodayItems] = useState<PlanItem[]>(
     initial.map((w) => ({ workout: w, done: false }))
   );
@@ -26,6 +27,7 @@ export function PlanBoard({ initial }: { initial: Workout[] }) {
   const activeItems = tab === "today" ? todayItems : savedItems;
   const setActiveItems = tab === "today" ? setTodayItems : setSavedItems;
 
+  // Sort a copy so changing the order never mutates React state.
   const sortedItems = useMemo(() => {
     return [...activeItems].sort((a, b) =>
       sortAsc
@@ -34,6 +36,7 @@ export function PlanBoard({ initial }: { initial: Workout[] }) {
     );
   }, [activeItems, sortAsc]);
 
+  // Summary metrics always describe today's plan, even while Saved is selected.
   const totals = useMemo(() => {
     return todayItems.reduce(
       (acc, item) => ({
@@ -45,6 +48,7 @@ export function PlanBoard({ initial }: { initial: Workout[] }) {
     );
   }, [todayItems]);
 
+  // Plan actions apply to the list selected by the current tab.
   function remove(slug: string) {
     setActiveItems((items) => items.filter((i) => i.workout.slug !== slug));
   }

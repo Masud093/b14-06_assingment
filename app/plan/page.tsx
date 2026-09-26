@@ -7,6 +7,7 @@ import { getWorkoutBySlug } from "@/lib/workouts";
 const seedSlugs = ["russian-twist", "pull-up"];
 
 export default function PlanPage() {
+  // Resolve the seeded slugs into workout records for the interactive board.
   const initial = seedSlugs.map(getWorkoutBySlug).filter(Boolean) as NonNullable<
     ReturnType<typeof getWorkoutBySlug>
   >[];

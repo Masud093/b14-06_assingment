@@ -6,6 +6,7 @@ import { Tag } from "@/components/Tag";
 import { getWorkoutBySlug, workouts } from "@/lib/workouts";
 import { BookmarkIcon, CheckIcon } from "@/components/icons";
 
+// Prebuild one detail route for each workout in the local library.
 export function generateStaticParams() {
   return workouts.map((w) => ({ slug: w.slug }));
 }

@@ -250,5 +250,6 @@ export const workouts: Workout[] = [
 ];
 
 export function getWorkoutBySlug(slug: string): Workout | undefined {
+  // Use the same library source for route lookups throughout the app.
   return workouts.find((w) => w.slug === slug);
 }

@@ -10,6 +10,7 @@ export function WorkoutCard({ workout }: { workout: Workout }) {
       href={`/workouts/${workout.slug}`}
       className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-colors hover:border-accent/40">
       <div className="relative h-48 w-full bg-surface-alt">
+        {/* Local artwork keeps thumbnails available without a remote image service. */}
         <Image
           src="/v4_11.png"
           alt={workout.name}
