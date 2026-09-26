@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { WorkoutCard } from "@/components/WorkoutCard";
+import { WorkoutLibrary } from "@/components/WorkoutLibrary";
 import { workouts } from "@/lib/workouts";
 
 export default function HomePage() {
@@ -37,22 +37,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="library" className="flex flex-col gap-8">
-          <div className="flex flex-col gap-1">
-            <h2 className="font-heading text-3xl font-bold uppercase tracking-[-0.75px] text-white">
-              The Library
-            </h2>
-            <p className="font-body text-sm text-muted">
-              Twelve lifts covering every major muscle group.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {workouts.map((workout) => (
-              <WorkoutCard key={workout.slug} workout={workout} />
-            ))}
-          </div>
-        </section>
+        <WorkoutLibrary workouts={workouts} />
       </main>
 
       <Footer />
