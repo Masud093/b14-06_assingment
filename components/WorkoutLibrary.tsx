@@ -1,18 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { Workout } from "@/lib/types";
+import { MuscleGroup, Workout } from "@/lib/types";
 import { WorkoutCard } from "./WorkoutCard";
+
+const muscleGroups: Array<"All" | MuscleGroup> = [
+  "All",
+  "Chest",
+  "Back",
+  "Legs",
+  "Shoulders",
+  "Arms",
+  "Core",
+];
 
 export function WorkoutLibrary({ workouts }: { workouts: Workout[] }) {
   const [query, setQuery] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState<(typeof muscleGroups)[number]>("All");
   const normalizedQuery = query.trim().toLowerCase();
-  const filteredWorkouts = workouts.filter((workout) =>
-    [workout.name, workout.equipment, ...workout.tags]
+  const filteredWorkouts = workouts.filter((workout) => {
+    const matchesQuery = [workout.name, workout.equipment, ...workout.tags]
       .join(" ")
       .toLowerCase()
-      .includes(normalizedQuery)
-  );
+      .includes(normalizedQuery);
+    const matchesGroup = selectedGroup === "All" || workout.tags.includes(selectedGroup);
+    return matchesQuery && matchesGroup;
+  });
 
   return (
     <section id="library" className="flex flex-col gap-8">
@@ -25,16 +38,32 @@ export function WorkoutLibrary({ workouts }: { workouts: Workout[] }) {
         </p>
       </div>
 
-      <label className="flex max-w-md flex-col gap-2 font-body text-xs font-bold uppercase text-muted">
-        Search workouts
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Name, equipment, or muscle group"
-          className="h-11 rounded-md border border-border bg-surface px-4 text-sm font-normal normal-case text-white outline-none placeholder:text-subtle focus:border-accent"
-        />
-      </label>
+      <div className="flex flex-wrap items-end gap-4">
+        <label className="flex min-w-60 max-w-md flex-1 flex-col gap-2 font-body text-xs font-bold uppercase text-muted">
+          Search workouts
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Name, equipment, or muscle group"
+            className="h-11 rounded-md border border-border bg-surface px-4 text-sm font-normal normal-case text-white outline-none placeholder:text-subtle focus:border-accent"
+          />
+        </label>
+        <label className="flex min-w-44 flex-col gap-2 font-body text-xs font-bold uppercase text-muted">
+          Muscle group
+          <select
+            value={selectedGroup}
+            onChange={(event) => setSelectedGroup(event.target.value as (typeof muscleGroups)[number])}
+            className="h-11 rounded-md border border-border bg-surface px-4 text-sm font-normal normal-case text-white outline-none focus:border-accent"
+          >
+            {muscleGroups.map((group) => (
+              <option key={group} value={group}>
+                {group === "All" ? "All muscle groups" : group}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       {filteredWorkouts.length === 0 ? (
         <p className="border-t border-border py-8 font-body text-sm text-muted">
