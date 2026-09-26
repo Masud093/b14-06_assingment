@@ -3,8 +3,8 @@ import Image from "next/image";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Tag } from "@/components/Tag";
+import { WorkoutActions } from "@/components/WorkoutActions";
 import { getWorkoutBySlug, workouts } from "@/lib/workouts";
-import { BookmarkIcon, CheckIcon } from "@/components/icons";
 
 // Prebuild one detail route for each workout in the local library.
 export function generateStaticParams() {
@@ -87,16 +87,7 @@ export default function WorkoutDetailsPage({ params }: { params: { slug: string 
               </ol>
             </div>
 
-            <div className="flex flex-wrap gap-3 pt-2">
-              <button className="flex items-center gap-2 rounded-md bg-accent px-6 py-3 font-body text-sm font-bold text-black">
-                <CheckIcon className="size-4" />
-                Add to Plan
-              </button>
-              <button className="flex items-center gap-2 rounded-md border border-border px-6 py-3 font-body text-sm font-semibold text-white">
-                <BookmarkIcon className="size-4" />
-                Save for Later
-              </button>
-            </div>
+            <WorkoutActions workoutSlug={workout.slug} />
           </div>
         </div>
       </main>
