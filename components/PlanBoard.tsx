@@ -1,9 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Workout } from "@/lib/types";
+import { getWorkoutBySlug } from "@/lib/workouts";
+import {
+  PLAN_UPDATED_EVENT,
+  readWorkoutPlan,
+  writeWorkoutPlan,
+} from "@/lib/planStorage";
 import { ChevronDownIcon, ClockIcon, FlameIcon, StarIcon, CheckIcon, XIcon } from "./icons";
 
 type Tab = "today" | "saved";
@@ -19,10 +25,42 @@ export function PlanBoard({ initial }: { initial: Workout[] }) {
   const [todayItems, setTodayItems] = useState<PlanItem[]>(
     initial.map((w) => ({ workout: w, done: false }))
   );
-  const [savedItems, setSavedItems] = useState<PlanItem[]>(
-    initial.map((w) => ({ workout: w, done: false }))
-  );
+  const [savedItems, setSavedItems] = useState<PlanItem[]>([]);
+  const [planLoaded, setPlanLoaded] = useState(false);
   const [sortAsc, setSortAsc] = useState(true);
+
+  useEffect(() => {
+    const syncFromStorage = () => {
+      const stored = readWorkoutPlan();
+      const toItems = (slugs: string[], doneSlugs: string[]) =>
+        slugs.flatMap((slug) => {
+          const workout = getWorkoutBySlug(slug);
+          return workout ? [{ workout, done: doneSlugs.includes(slug) }] : [];
+        });
+
+      setTodayItems(toItems(stored.today, stored.done));
+      setSavedItems(toItems(stored.saved, []));
+      setPlanLoaded(true);
+    };
+
+    syncFromStorage();
+    window.addEventListener(PLAN_UPDATED_EVENT, syncFromStorage);
+    window.addEventListener("storage", syncFromStorage);
+    return () => {
+      window.removeEventListener(PLAN_UPDATED_EVENT, syncFromStorage);
+      window.removeEventListener("storage", syncFromStorage);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!planLoaded) return;
+
+    writeWorkoutPlan({
+      today: todayItems.map(({ workout }) => workout.slug),
+      saved: savedItems.map(({ workout }) => workout.slug),
+      done: todayItems.filter((item) => item.done).map(({ workout }) => workout.slug),
+    });
+  }, [todayItems, savedItems, planLoaded]);
 
   const activeItems = tab === "today" ? todayItems : savedItems;
   const setActiveItems = tab === "today" ? setTodayItems : setSavedItems;
